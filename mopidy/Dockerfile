@@ -17,54 +17,61 @@ RUN \
     && apt-get update \
     \
     && apt-get install -y --no-install-recommends \
-        build-essential=12.9 \
-        git=1:2.30.2-1 \
-        gstreamer1.0-alsa=1.18.4-2 \
-        gstreamer1.0-plugins-bad=1.18.4-3 \
-        gstreamer1.0-plugins-good=1.18.4-2 \
-        gstreamer1.0-plugins-ugly=1.18.4-2 \
-        gstreamer1.0-pulseaudio=1.18.4-2 \
-        libasound2-dev=1.2.4-1.1 \
-        libffi-dev=3.3-6 \
-        libspotify-dev=12.1.51-1 \
-        libspotify12=12.1.51-1 \
-        libxml2-dev=2.9.10+dfsg-6.7+deb11u2 \
-        libxslt1-dev=1.1.34-4 \
-        nginx=1.18.0-6.1 \
-        python3-dev=3.9.2-3 \
-        python3-gi=3.38.0-2 \
-        python3-gst-1.0=1.18.3-1 \
-        zlib1g-dev=1:1.2.11.dfsg-2+deb11u1 \
-        mopidy=3.3.0-1 \
-        mopidy-alsamixer=2.0.1-1 \
-        mopidy-local=3.2.1-1 \
-        mopidy-mpd=3.3.0-1 \
-        mopidy-podcast=3.0.1-1 \
-        mopidy-soundcloud=3.0.1-1 \
-        mopidy-tunein=1.1.0-1 \
+    build-essential=12.9 \
+    git=1:2.30.2-1 \
+    gstreamer1.0-alsa=1.18.4-2 \
+    gstreamer1.0-plugins-bad=1.18.4-3 \
+    gstreamer1.0-plugins-good=1.18.4-2 \
+    gstreamer1.0-plugins-ugly=1.18.4-2 \
+    gstreamer1.0-pulseaudio=1.18.4-2 \
+    libasound2-dev=1.2.4-1.1 \
+    libffi-dev=3.3-6 \
+    libspotify-dev=12.1.51-1 \
+    libspotify12=12.1.51-1 \
+    libxml2-dev=2.9.10+dfsg-6.7+deb11u2 \
+    libxslt1-dev=1.1.34-4 \
+    nginx=1.18.0-6.1 \
+    python3-dev=3.9.2-3 \
+    python3-gi=3.38.0-2 \
+    python3-gst-1.0=1.18.3-1 \
+    zlib1g-dev=1:1.2.11.dfsg-2+deb11u1 \
+    mopidy=3.3.0-1 \
+    mopidy-alsamixer=2.0.1-1 \
+    mopidy-local=3.2.1-1 \
+    mopidy-mpd=3.3.0-1 \
+    mopidy-podcast=3.0.1-1 \
+    mopidy-soundcloud=3.0.1-1 \
+    mopidy-tunein=1.1.0-1 \
+    wget\
     \
     && curl https://bootstrap.pypa.io/get-pip.py | python3 \
     && pip3 install --no-cache-dir -r /tmp/requirements.txt \
     \
     && find /usr/local \
-        \( -type d -a -name test -o -name tests -o -name '__pycache__' \) \
-        -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
-        -exec rm -rf '{}' + \
+    \( -type d -a -name test -o -name tests -o -name '__pycache__' \) \
+    -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
+    -exec rm -rf '{}' + \
     \
     && apt-get purge -y --auto-remove \
-        libffi-dev \
-        libxml2-dev \
-        libxslt1-dev \
-        zlib1g-dev \
-        build-essential \
-        gcc \
-        python-dev \
-        dpkg-dev \
+    libffi-dev \
+    libxml2-dev \
+    libxslt1-dev \
+    zlib1g-dev \
+    build-essential \
+    gcc \
+    python-dev \
+    dpkg-dev \
     && rm -fr \
-        /var/{cache,log}/* \
-        /var/lib/apt/lists/* \
-        /root/.cache \
+    /var/{cache,log}/* \
+    /var/lib/apt/lists/* \
+    /root/.cache \
     && find /tmp/ -mindepth 1  -delete
+
+ENV SNAPCAST_VERSION=0.26.0
+RUN wget https://github.com/badaix/snapcast/releases/download/v${SNAPCAST_VERSION}/snapserver_${SNAPCAST_VERSION}-1_amd64.deb
+
+RUN apt install -y ./snapserver_${SNAPCAST_VERSION}-1_amd64.deb \
+    && rm snapserver_${SNAPCAST_VERSION}-1_amd64.deb
 
 # Move access.log to stdout and error.log to stderr
 RUN mkdir -p /var/log/nginx && ln -sf /dev/stdout /var/log/nginx/access.log && ln -sf /dev/stderr /var/log/nginx/error.log
